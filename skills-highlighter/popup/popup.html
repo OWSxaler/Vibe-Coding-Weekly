@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Skills Highlighter</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Skills Highlighter</h1>
+    <label for="keywords">Enter skills (comma-separated):</label>
+    <textarea id="keywords" rows="4" placeholder="JavaScript, React, Python, AWS, Docker..."></textarea>
+    <div class="buttons">
+      <button id="highlight-btn" class="btn btn-primary">Highlight</button>
+      <button id="clear-btn" class="btn btn-secondary">Clear</button>
+    </div>
+    <div id="summary" class="summary hidden">
+      <div id="match-count" class="match-count"></div>
+      <div id="match-list" class="match-list"></div>
+    </div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>
