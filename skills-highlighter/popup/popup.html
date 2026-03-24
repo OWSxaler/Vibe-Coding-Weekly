@@ -8,18 +8,79 @@
 </head>
 <body>
   <div class="container">
-    <h1>Skills Highlighter</h1>
-    <label for="keywords">Enter skills (comma-separated):</label>
-    <textarea id="keywords" rows="4" placeholder="JavaScript, React, Python, AWS, Docker..."></textarea>
+    <!-- Header -->
+    <div class="header">
+      <h1>Skills Highlighter</h1>
+      <button id="theme-toggle" class="icon-btn" title="Toggle theme">
+        <span id="theme-icon">&#9788;</span>
+      </button>
+    </div>
+
+    <!-- List Selector -->
+    <div class="list-bar">
+      <select id="list-select"></select>
+      <button id="new-list-btn" class="icon-btn" title="New list">+</button>
+      <button id="rename-list-btn" class="icon-btn" title="Rename list">&#9998;</button>
+      <button id="delete-list-btn" class="icon-btn" title="Delete list">&times;</button>
+    </div>
+
+    <!-- List Name Modal -->
+    <div id="list-modal" class="modal hidden">
+      <div class="modal-content">
+        <input id="list-name-input" type="text" placeholder="List name..." maxlength="30">
+        <div class="modal-buttons">
+          <button id="modal-save" class="btn btn-primary btn-sm">Save</button>
+          <button id="modal-cancel" class="btn btn-secondary btn-sm">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Categories -->
+    <div id="categories-container"></div>
+    <button id="add-category-btn" class="btn btn-link">+ Add Category</button>
+
+    <!-- Action Buttons -->
     <div class="buttons">
       <button id="highlight-btn" class="btn btn-primary">Highlight</button>
       <button id="clear-btn" class="btn btn-secondary">Clear</button>
     </div>
+
+    <!-- Summary -->
     <div id="summary" class="summary hidden">
+      <div id="fit-score" class="fit-score">
+        <span id="fit-percent"></span>
+        <div class="fit-bar"><div id="fit-fill" class="fit-fill"></div></div>
+      </div>
       <div id="match-count" class="match-count"></div>
       <div id="match-list" class="match-list"></div>
+      <button id="export-btn" class="btn btn-outline btn-sm">Copy Summary</button>
+      <span id="export-feedback" class="export-feedback hidden">Copied!</span>
     </div>
+
+    <!-- Suggestions -->
+    <div id="suggestions" class="suggestions hidden">
+      <div class="suggestions-header">Suggestions from this page</div>
+      <div id="suggestions-list" class="suggestions-list"></div>
+    </div>
+
+    <!-- Auto-highlight Settings -->
+    <details class="settings-section">
+      <summary class="settings-toggle">Auto-highlight settings</summary>
+      <div class="settings-body">
+        <label class="toggle-label">
+          <input type="checkbox" id="auto-highlight-toggle">
+          <span class="toggle-switch"></span>
+          <span>Auto-highlight on job sites</span>
+        </label>
+        <label class="field-label">Domains (comma-separated):</label>
+        <textarea id="domain-list" rows="2" class="domain-textarea"></textarea>
+        <button id="save-domains-btn" class="btn btn-secondary btn-sm">Save domains</button>
+      </div>
+    </details>
+
+    <div class="shortcut-hint">Tip: <kbd>Ctrl+Shift+H</kbd> to toggle highlights</div>
   </div>
+  <script src="../lib/storage.js"></script>
   <script src="popup.js"></script>
 </body>
 </html>
