@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Skills Highlighter",
-  "version": "2.0.0",
-  "description": "Paste a list of skills and highlight them on any page — job descriptions, LinkedIn, CV viewers. Color-coded categories, fit scores, auto-highlight, and more.",
+  "version": "3.0.0",
+  "description": "Highlight skills, companies, and sourcing signals on any page. Role templates, JD import, company intelligence, predictive move scores, and more.",
   "permissions": ["storage", "activeTab", "scripting", "tabs"],
   "action": {
     "default_popup": "popup/popup.html",

@@ -26,9 +26,34 @@ const autoHighlightToggle = document.getElementById("auto-highlight-toggle");
 const domainList = document.getElementById("domain-list");
 const saveDomainsBtn = document.getElementById("save-domains-btn");
 
+// Template & JD DOM references
+const templateBtn = document.getElementById("template-btn");
+const templateModal = document.getElementById("template-modal");
+const templateGrid = document.getElementById("template-grid");
+const templateCancel = document.getElementById("template-cancel");
+const importJdBtn = document.getElementById("import-jd-btn");
+const jdModal = document.getElementById("jd-modal");
+const jdInput = document.getElementById("jd-input");
+const jdPreview = document.getElementById("jd-preview");
+const jdPreviewList = document.getElementById("jd-preview-list");
+const jdExtractBtn = document.getElementById("jd-extract-btn");
+const jdCreateBtn = document.getElementById("jd-create-btn");
+const jdCancel = document.getElementById("jd-cancel");
+
+// Company & Move Score DOM references
+const companyInsightsEl = document.getElementById("company-insights");
+const companyInsightsList = document.getElementById("company-insights-list");
+const companyHighlightToggle = document.getElementById("company-highlight-toggle");
+const moveScoreEl = document.getElementById("move-score");
+const moveScoreValue = document.getElementById("move-score-value");
+const moveScoreFill = document.getElementById("move-score-fill");
+const moveSignalsList = document.getElementById("move-signals-list");
+const moveScoreToggle = document.getElementById("move-score-toggle");
+
 let currentList = null;
 let modalMode = null; // "new" or "rename"
 let lastMatchData = null; // for export
+let lastJdExtracted = null; // for JD import
 
 // === Initialization ===
 async function init() {
@@ -36,6 +61,7 @@ async function init() {
   await loadTheme();
   await loadLists();
   await loadAutoHighlightSettings();
+  await loadFeatureToggles();
 }
 
 // === Theme ===
@@ -137,6 +163,141 @@ deleteListBtn.addEventListener("click", async () => {
   await loadLists();
 });
 
+// === Template Picker ===
+templateBtn.addEventListener("click", () => {
+  renderTemplateGrid();
+  templateModal.classList.remove("hidden");
+});
+
+templateCancel.addEventListener("click", () => {
+  templateModal.classList.add("hidden");
+});
+
+function renderTemplateGrid() {
+  templateGrid.innerHTML = "";
+  if (typeof RolePersonas === "undefined") return;
+
+  RolePersonas.forEach((persona) => {
+    const card = document.createElement("div");
+    card.className = "template-card";
+    card.innerHTML = `
+      <div class="template-card-icon">${persona.icon}</div>
+      <div class="template-card-name">${escapeHtml(persona.name)}</div>
+      <div class="template-card-desc">${escapeHtml(persona.description)}</div>
+    `;
+    card.addEventListener("click", () => loadPersonaTemplate(persona));
+    templateGrid.appendChild(card);
+  });
+}
+
+async function loadPersonaTemplate(persona) {
+  const list = Storage.createDefaultList(persona.name);
+  // Replace the default category with persona categories
+  list.categories = {};
+  persona.categories.forEach((cat) => {
+    const catObj = Storage.createDefaultCategory(cat.keywords);
+    catObj.name = cat.name;
+    catObj.color = cat.color;
+    list.categories[catObj.id] = catObj;
+  });
+
+  await Storage.saveList(list);
+  await Storage.setActiveList(list.id);
+  templateModal.classList.add("hidden");
+  await loadLists();
+}
+
+// === JD Import ===
+importJdBtn.addEventListener("click", () => {
+  jdInput.value = "";
+  jdPreview.classList.add("hidden");
+  jdCreateBtn.classList.add("hidden");
+  jdExtractBtn.classList.remove("hidden");
+  lastJdExtracted = null;
+  jdModal.classList.remove("hidden");
+  jdInput.focus();
+});
+
+jdCancel.addEventListener("click", () => {
+  jdModal.classList.add("hidden");
+});
+
+jdExtractBtn.addEventListener("click", () => {
+  const text = jdInput.value.trim();
+  if (!text) return;
+
+  const extracted = extractSkillsFromJD(text);
+  if (extracted.length === 0) {
+    jdPreviewList.innerHTML = '<div style="font-size:11px;color:var(--text-muted);">No skills detected. Try pasting a more detailed job description.</div>';
+    jdPreview.classList.remove("hidden");
+    return;
+  }
+
+  lastJdExtracted = extracted;
+  renderJdPreview(extracted);
+  jdPreview.classList.remove("hidden");
+  jdExtractBtn.classList.add("hidden");
+  jdCreateBtn.classList.remove("hidden");
+});
+
+jdCreateBtn.addEventListener("click", async () => {
+  if (!lastJdExtracted || lastJdExtracted.length === 0) return;
+
+  const list = Storage.createDefaultList("From JD");
+  list.categories = {};
+
+  lastJdExtracted.forEach((group) => {
+    const cat = Storage.createDefaultCategory(group.skills);
+    cat.name = group.category;
+    cat.color = group.color;
+    list.categories[cat.id] = cat;
+  });
+
+  await Storage.saveList(list);
+  await Storage.setActiveList(list.id);
+  jdModal.classList.add("hidden");
+  await loadLists();
+});
+
+function extractSkillsFromJD(text) {
+  const categories = window.__knownSkillsByCategory || [];
+  const results = [];
+
+  categories.forEach((cat) => {
+    const matched = [];
+    cat.skills.forEach((skill) => {
+      const escaped = skill.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const regex = new RegExp(`\\b${escaped}\\b`, "i");
+      if (regex.test(text)) {
+        matched.push(skill);
+      }
+    });
+    if (matched.length > 0) {
+      results.push({
+        category: cat.category,
+        color: cat.color,
+        skills: matched,
+      });
+    }
+  });
+
+  return results;
+}
+
+function renderJdPreview(extracted) {
+  jdPreviewList.innerHTML = "";
+  extracted.forEach((group) => {
+    const div = document.createElement("div");
+    div.className = "jd-preview-category";
+    div.style.borderLeftColor = group.color;
+    div.innerHTML = `
+      <div class="jd-preview-category-name">${escapeHtml(group.category)} (${group.skills.length})</div>
+      <div class="jd-preview-skills">${group.skills.map(escapeHtml).join(", ")}</div>
+    `;
+    jdPreviewList.appendChild(div);
+  });
+}
+
 // === Category Management ===
 function renderCategories() {
   categoriesContainer.innerHTML = "";
@@ -234,6 +395,12 @@ function getFitColor(percent) {
   return "#e74c3c";
 }
 
+function getMoveColor(score) {
+  if (score >= 60) return "#e74c3c"; // high likelihood = red (action)
+  if (score >= 30) return "#f39c12"; // moderate = orange
+  return "#27ae60"; // low = green (stable)
+}
+
 function showSummary(keywordGroups, matched) {
   const matchedLower = new Set(matched.map((m) => (typeof m === "string" ? m : m.keyword).toLowerCase()));
   const allKeywords = getAllKeywords(keywordGroups);
@@ -281,16 +448,34 @@ highlightBtn.addEventListener("click", async () => {
   if (keywordGroups.length === 0) return;
 
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  const prefs = await Storage.getPreferences();
 
   try {
+    // Inject scripts needed
+    const scripts = ["content/content.js"];
+    if (prefs.companyHighlight) {
+      scripts.unshift("lib/company-data.js");
+    }
+    if (prefs.moveScore) {
+      scripts.unshift("lib/move-signals.js");
+      // move-signals needs company-data for company signals
+      if (!prefs.companyHighlight) {
+        scripts.unshift("lib/company-data.js");
+      }
+    }
     await chrome.scripting.executeScript({
       target: { tabId: tab.id },
-      files: ["content/content.js"],
+      files: scripts,
     });
 
     chrome.tabs.sendMessage(
       tab.id,
-      { action: "highlight", keywordGroups },
+      {
+        action: "highlight",
+        keywordGroups,
+        companyHighlight: !!prefs.companyHighlight,
+        moveScoreEnabled: !!prefs.moveScore,
+      },
       (response) => {
         if (chrome.runtime.lastError) {
           console.error(chrome.runtime.lastError);
@@ -309,6 +494,20 @@ highlightBtn.addEventListener("click", async () => {
 
           // Request suggestions
           requestSuggestions(tab.id, allKw);
+
+          // Show company insights if available
+          if (response.companyInsights && response.companyInsights.length > 0) {
+            showCompanyInsights(response.companyInsights);
+          } else {
+            companyInsightsEl.classList.add("hidden");
+          }
+
+          // Show move score if available
+          if (response.moveScore !== undefined && response.moveScore !== null) {
+            showMoveScore(response.moveScore, response.moveSignals || []);
+          } else {
+            moveScoreEl.classList.add("hidden");
+          }
         }
       }
     );
@@ -324,9 +523,62 @@ clearBtn.addEventListener("click", async () => {
   } catch (e) { /* content script may not exist */ }
   summaryEl.classList.add("hidden");
   suggestionsEl.classList.add("hidden");
+  companyInsightsEl.classList.add("hidden");
+  moveScoreEl.classList.add("hidden");
   lastMatchData = null;
   chrome.action.setBadgeText({ text: "", tabId: tab.id });
 });
+
+// === Company Insights Display ===
+function showCompanyInsights(insights) {
+  companyInsightsList.innerHTML = "";
+  insights.forEach((insight) => {
+    const card = document.createElement("div");
+    card.className = "company-insight-card";
+
+    let html = `<div class="company-insight-name">${escapeHtml(insight.name)}`;
+    if (insight.formativeYears) {
+      html += `<span class="formative-badge">Formative</span>`;
+    }
+    html += `</div>`;
+
+    if (insight.stage) {
+      html += `<div class="company-insight-stage">${escapeHtml(insight.stage)}</div>`;
+    }
+    if (insight.detail) {
+      html += `<div class="company-insight-detail">${escapeHtml(insight.detail)}</div>`;
+    }
+
+    card.innerHTML = html;
+    companyInsightsList.appendChild(card);
+  });
+  companyInsightsEl.classList.remove("hidden");
+}
+
+// === Likelihood to Move Score ===
+function showMoveScore(score, signals) {
+  const clamped = Math.min(100, Math.max(0, score));
+  const color = getMoveColor(clamped);
+
+  moveScoreValue.textContent = clamped + "/100";
+  moveScoreValue.style.color = color;
+  moveScoreFill.style.width = clamped + "%";
+  moveScoreFill.style.backgroundColor = color;
+
+  moveSignalsList.innerHTML = "";
+  signals.forEach((signal) => {
+    const item = document.createElement("div");
+    item.className = "move-signal-item";
+    const valColor = signal.points > 0 ? getMoveColor(signal.points * 2) : "var(--text-muted)";
+    item.innerHTML = `
+      <span class="move-signal-label">${escapeHtml(signal.label)}</span>
+      <span class="move-signal-value" style="color:${valColor}">+${signal.points}</span>
+    `;
+    moveSignalsList.appendChild(item);
+  });
+
+  moveScoreEl.classList.remove("hidden");
+}
 
 // === Export ===
 exportBtn.addEventListener("click", async () => {
@@ -397,6 +649,21 @@ async function addSuggestionToList(skill) {
     highlightBtn.click();
   }
 }
+
+// === Feature Toggles ===
+async function loadFeatureToggles() {
+  const prefs = await Storage.getPreferences();
+  companyHighlightToggle.checked = !!prefs.companyHighlight;
+  moveScoreToggle.checked = !!prefs.moveScore;
+}
+
+companyHighlightToggle.addEventListener("change", async () => {
+  await Storage.setPreferences({ companyHighlight: companyHighlightToggle.checked });
+});
+
+moveScoreToggle.addEventListener("change", async () => {
+  await Storage.setPreferences({ moveScore: moveScoreToggle.checked });
+});
 
 // === Auto-highlight Settings ===
 async function loadAutoHighlightSettings() {
