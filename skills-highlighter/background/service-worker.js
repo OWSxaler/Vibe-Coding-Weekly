@@ -20,9 +20,16 @@ chrome.commands.onCommand.addListener(async (command) => {
   if (keywordGroups.length === 0) return;
 
   try {
+    const prefs = await Storage.getPreferences();
+    const scripts = ["lib/known-skills.js", "content/content.js"];
+    if (prefs.companyHighlight) {
+      scripts.unshift("lib/company-data.js");
+      scripts.push("lib/move-signals.js");
+    }
+
     await chrome.scripting.executeScript({
       target: { tabId: tab.id },
-      files: ["lib/known-skills.js", "content/content.js"],
+      files: scripts,
     });
 
     chrome.tabs.sendMessage(
@@ -72,14 +79,26 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
   if (keywordGroups.length === 0) return;
 
   try {
+    const prefs = await Storage.getPreferences();
+    const scripts = ["lib/known-skills.js", "content/content.js"];
+    if (prefs.companyHighlight) {
+      scripts.unshift("lib/company-data.js");
+      scripts.push("lib/move-signals.js");
+    }
+
     await chrome.scripting.executeScript({
       target: { tabId },
-      files: ["lib/known-skills.js", "content/content.js"],
+      files: scripts,
     });
 
     chrome.tabs.sendMessage(
       tabId,
-      { action: "highlight", keywordGroups },
+      {
+        action: "highlight",
+        keywordGroups,
+        companyHighlight: !!prefs.companyHighlight,
+        moveScoreEnabled: !!prefs.moveScore,
+      },
       (response) => {
         if (chrome.runtime.lastError) return;
         if (response && response.matched) {

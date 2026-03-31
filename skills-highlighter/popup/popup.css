@@ -580,3 +580,274 @@ kbd {
   font-size: 10px;
   font-family: inherit;
 }
+
+/* Template Picker Modal */
+.modal-wide {
+  width: 330px;
+}
+
+.modal-header {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: var(--text);
+}
+
+.template-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-bottom: 10px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.template-card {
+  border: 1px solid var(--border-light);
+  border-radius: 6px;
+  padding: 8px;
+  cursor: pointer;
+  background: var(--bg-secondary);
+  transition: all 0.15s;
+  text-align: center;
+}
+
+.template-card:hover {
+  border-color: var(--btn-primary);
+  background: var(--bg);
+  box-shadow: 0 1px 4px var(--shadow);
+}
+
+.template-card-icon {
+  font-size: 20px;
+  margin-bottom: 4px;
+}
+
+.template-card-name {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+
+.template-card-desc {
+  font-size: 9px;
+  color: var(--text-muted);
+}
+
+/* JD Import Modal */
+#jd-input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  font-family: inherit;
+  font-size: 12px;
+  resize: vertical;
+  outline: none;
+  background: var(--input-bg);
+  color: var(--text);
+  margin-bottom: 8px;
+  min-height: 100px;
+}
+
+#jd-input:focus {
+  border-color: var(--btn-primary);
+}
+
+.jd-preview {
+  margin-bottom: 8px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.jd-preview.hidden {
+  display: none;
+}
+
+.jd-preview-header {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+
+.jd-preview-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.jd-preview-category {
+  padding: 4px 8px;
+  background: var(--bg-secondary);
+  border-radius: 4px;
+  border-left: 3px solid var(--btn-primary);
+}
+
+.jd-preview-category-name {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+
+.jd-preview-skills {
+  font-size: 10px;
+  color: var(--text-secondary);
+}
+
+/* Company Insights */
+.company-insights {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-light);
+}
+
+.company-insights.hidden {
+  display: none;
+}
+
+.company-insights-header {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+
+.company-insights-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.company-insight-card {
+  padding: 6px 8px;
+  background: var(--bg-secondary);
+  border-radius: 6px;
+  border-left: 3px solid #f39c12;
+}
+
+.company-insight-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.company-insight-stage {
+  font-size: 10px;
+  color: var(--btn-primary);
+  font-weight: 500;
+}
+
+.company-insight-detail {
+  font-size: 10px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.formative-badge {
+  display: inline-block;
+  font-size: 9px;
+  padding: 1px 6px;
+  background: #27ae60;
+  color: #fff;
+  border-radius: 8px;
+  font-weight: 600;
+  margin-left: 4px;
+}
+
+/* Likelihood to Move Score */
+.move-score {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-light);
+}
+
+.move-score.hidden {
+  display: none;
+}
+
+.move-score-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.move-score-value {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.move-score-bar {
+  height: 8px;
+  background: var(--border-light);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+
+.move-score-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.4s ease, background-color 0.3s;
+  width: 0;
+}
+
+.move-score-details {
+  margin-top: 4px;
+}
+
+.move-score-details summary {
+  font-size: 11px;
+  color: var(--text-muted);
+  cursor: pointer;
+  list-style: none;
+}
+
+.move-score-details summary::-webkit-details-marker {
+  display: none;
+}
+
+.move-score-details summary::before {
+  content: "\25B6";
+  font-size: 8px;
+  margin-right: 4px;
+  display: inline-block;
+  transition: transform 0.2s;
+}
+
+.move-score-details[open] > summary::before {
+  transform: rotate(90deg);
+}
+
+.move-signals-list {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding-top: 4px;
+}
+
+.move-signal-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 10px;
+  padding: 2px 4px;
+  border-radius: 3px;
+  background: var(--bg-secondary);
+}
+
+.move-signal-label {
+  color: var(--text-secondary);
+}
+
+.move-signal-value {
+  font-weight: 600;
+  min-width: 30px;
+  text-align: right;
+}
