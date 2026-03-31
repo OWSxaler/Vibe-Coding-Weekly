@@ -22,6 +22,8 @@
       <button id="new-list-btn" class="icon-btn" title="New list">+</button>
       <button id="rename-list-btn" class="icon-btn" title="Rename list">&#9998;</button>
       <button id="delete-list-btn" class="icon-btn" title="Delete list">&times;</button>
+      <button id="template-btn" class="icon-btn" title="Load from template">&#9881;</button>
+      <button id="import-jd-btn" class="icon-btn" title="Import from JD">&#128196;</button>
     </div>
 
     <!-- List Name Modal -->
@@ -31,6 +33,34 @@
         <div class="modal-buttons">
           <button id="modal-save" class="btn btn-primary btn-sm">Save</button>
           <button id="modal-cancel" class="btn btn-secondary btn-sm">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Template Picker Modal -->
+    <div id="template-modal" class="modal hidden">
+      <div class="modal-content modal-wide">
+        <div class="modal-header">Choose a Role Template</div>
+        <div id="template-grid" class="template-grid"></div>
+        <div class="modal-buttons">
+          <button id="template-cancel" class="btn btn-secondary btn-sm">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- JD Import Modal -->
+    <div id="jd-modal" class="modal hidden">
+      <div class="modal-content modal-wide">
+        <div class="modal-header">Import from Job Description</div>
+        <textarea id="jd-input" rows="6" placeholder="Paste a job description here..."></textarea>
+        <div id="jd-preview" class="jd-preview hidden">
+          <div class="jd-preview-header">Extracted Skills</div>
+          <div id="jd-preview-list" class="jd-preview-list"></div>
+        </div>
+        <div class="modal-buttons">
+          <button id="jd-extract-btn" class="btn btn-primary btn-sm">Extract Skills</button>
+          <button id="jd-create-btn" class="btn btn-primary btn-sm hidden">Create List</button>
+          <button id="jd-cancel" class="btn btn-secondary btn-sm">Cancel</button>
         </div>
       </div>
     </div>
@@ -57,6 +87,25 @@
       <span id="export-feedback" class="export-feedback hidden">Copied!</span>
     </div>
 
+    <!-- Company Insights -->
+    <div id="company-insights" class="company-insights hidden">
+      <div class="company-insights-header">Company Insights</div>
+      <div id="company-insights-list" class="company-insights-list"></div>
+    </div>
+
+    <!-- Likelihood to Move Score -->
+    <div id="move-score" class="move-score hidden">
+      <div class="move-score-header">
+        <span>Likelihood to Move</span>
+        <span id="move-score-value" class="move-score-value"></span>
+      </div>
+      <div class="move-score-bar"><div id="move-score-fill" class="move-score-fill"></div></div>
+      <details class="move-score-details">
+        <summary>Signal breakdown</summary>
+        <div id="move-signals-list" class="move-signals-list"></div>
+      </details>
+    </div>
+
     <!-- Suggestions -->
     <div id="suggestions" class="suggestions hidden">
       <div class="suggestions-header">Suggestions from this page</div>
@@ -72,6 +121,16 @@
           <span class="toggle-switch"></span>
           <span>Auto-highlight on job sites</span>
         </label>
+        <label class="toggle-label">
+          <input type="checkbox" id="company-highlight-toggle">
+          <span class="toggle-switch"></span>
+          <span>Highlight company names</span>
+        </label>
+        <label class="toggle-label">
+          <input type="checkbox" id="move-score-toggle">
+          <span class="toggle-switch"></span>
+          <span>Show likelihood to move score</span>
+        </label>
         <label class="field-label">Domains (comma-separated):</label>
         <textarea id="domain-list" rows="2" class="domain-textarea"></textarea>
         <button id="save-domains-btn" class="btn btn-secondary btn-sm">Save domains</button>
@@ -81,6 +140,7 @@
     <div class="shortcut-hint">Tip: <kbd>Ctrl+Shift+H</kbd> to toggle highlights</div>
   </div>
   <script src="../lib/storage.js"></script>
+  <script src="../lib/role-personas.js"></script>
   <script src="popup.js"></script>
 </body>
 </html>
